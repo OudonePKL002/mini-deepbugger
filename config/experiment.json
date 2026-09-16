@@ -1,0 +1,76 @@
+{
+  "project": {
+    "name": "Mini-DeepClone",
+    "version": "PoC-v1",
+    "status": "frozen"
+  },
+
+  "platform": {
+    "architecture": "ARM64",
+    "operating_system": "macOS",
+    "compiler": "Apple Clang"
+  },
+
+  "compiler": {
+    "optimization_levels": [
+      "O0",
+      "O1",
+      "O2",
+      "O3"
+    ],
+
+    "binaries": {
+      "O0": "sandbox/variants/hello_O0",
+      "O1": "sandbox/variants/hello_O1",
+      "O2": "sandbox/variants/hello_O2",
+      "O3": "sandbox/variants/hello_O3"
+    }
+  },
+
+  "acfg": {
+    "node_feature_dimension": 29
+  },
+
+  "graph_encoder": {
+    "input_dimension": 29,
+    "hidden_dimension": 32,
+    "embedding_dimension": 16,
+    "pooling": "global_mean_pool"
+  },
+
+  "training": {
+    "loss": "CosineEmbeddingLoss",
+    "margin": 0.5,
+    "optimizer": "Adam",
+    "learning_rate": 0.01,
+    "epochs": 100,
+
+    "seeds": [
+      42,
+      123,
+      2026,
+      7,
+      99
+    ]
+  },
+
+  "evaluation": {
+    "similarity": "cosine",
+    "threshold": 0.5
+  },
+
+  "manifests": {
+    "phase1": "data/variant_pair_manifest.csv",
+    "phase2": "data/phase2_independent_manifest.csv"
+  },
+
+  "protocol": {
+    "phase1_role": "training_and_development",
+    "phase2_role": "independent_evaluation",
+
+    "phase2_training_allowed": false,
+    "phase2_feature_tuning_allowed": false,
+    "phase2_threshold_tuning_allowed": false,
+    "phase2_model_tuning_allowed": false
+  }
+}

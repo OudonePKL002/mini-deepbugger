@@ -1,0 +1,18 @@
+Mini-DeepClone Graph PoC v1
+Status: FINAL / FROZEN
+
+Final independent evaluation:
+10 unseen function families
+40 graph samples
+120 balanced pairs
+
+Graph Encoder:
+F1 = 0.7759 +/- 0.0045
+Separation = 0.4755 +/- 0.0318
+
+Handcrafted A-CFG:
+F1 = 0.5310
+Separation = 0.1937
+
+Phase-2 is evaluation-only.
+Any further model modification must be treated as Mini-DeepClone v2.

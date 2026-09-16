@@ -1,0 +1,5 @@
+version,main_change,accuracy,precision,recall,f1
+v0.1,coarse_feature_categories,0.9000,0.3750,0.7500,0.5000
+v0.2,branch_condition_features,0.9583,0.6667,0.7500,0.7059
+v0.3,condition_aware_cset,0.9667,0.7500,0.7500,0.7500
+v0.4,semantic_predicate_normalization,0.9833,1.0000,0.7500,0.8571

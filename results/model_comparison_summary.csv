@@ -1,0 +1,4 @@
+method,accuracy,precision,recall,f1,separation
+handcrafted_acfg,0.5000,0.5000,0.5000,0.5000,0.1595
+graph_encoder_mean,0.7167,0.6613,0.9667,0.7793,0.3790
+graph_encoder_std,0.1323,0.1048,0.0745,0.0758,0.2172

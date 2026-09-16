@@ -1,0 +1,38 @@
+=> Checkpoint 1:
+Graph Encoder sanity training
+
+Train separation:
+0.1030 → 0.9391
+
+Test separation:
+0.0733 → 0.0245
+
+Conclusion:
+Strong training separation but poor unseen-family generalization.
+Likely overfitting due to the very small pair dataset.
+
+-------------------------------------------------
+=> Checkpoint 2:
+Mini-DeepClone Graph PoC v1
+
+Dataset:
+- 52 graph samples
+- 156 labeled pairs
+- 10 training families
+- 3 unseen test families
+- O0 / O1 / O2 / O3
+- 5 random seeds
+
+Graph Encoder:
+- Semantic A-CFG
+- 29-dimensional node features
+- GCN encoder
+- 16-dimensional function embedding
+- CosineEmbeddingLoss
+
+Final multi-seed test:
+Accuracy   = 0.9500 ± 0.0692
+Precision  = 0.9401 ± 0.0851
+Recall     = 0.9667 ± 0.0745
+F1         = 0.9514 ± 0.0682
+Separation = 0.8068 ± 0.1043

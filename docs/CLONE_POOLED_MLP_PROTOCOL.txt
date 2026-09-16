@@ -1,0 +1,80 @@
+Mini-DeepClone Pooled-MLP Baseline Freeze
+
+Purpose:
+Stronger non-GCN baseline for Mini-DeepClone.
+
+Representation:
+29-D semantic A-CFG node features.
+
+Architecture:
+Mean pool over all nodes:
+[N, 29] -> [1, 29]
+
+MLP:
+29 -> 32 -> ReLU -> 16 -> ReLU
+
+Output:
+16-D graph embedding.
+
+Training:
+Phase-1 training pairs only.
+
+Loss:
+CosineEmbeddingLoss.
+
+Optimizer:
+Adam.
+
+Learning rate:
+Same frozen Mini-DeepClone configuration.
+
+Epochs:
+100.
+
+Seeds:
+42, 123, 2026, 7, 99.
+
+Similarity:
+Cosine similarity.
+
+Decision threshold:
+0.5.
+
+Evaluation:
+Frozen Phase-2 independent evaluation set.
+
+Phase-2:
+10 unseen function families.
+40 graph samples.
+120 balanced pairs.
+60 positive pairs.
+60 negative pairs.
+
+Restrictions:
+No Phase-2 training.
+No Phase-2 hyperparameter tuning.
+No Phase-2 threshold tuning.
+No model changes after observing Phase-2 results.
+
+Final pooled-MLP results:
+Accuracy   = 0.7033 +/- 0.0304
+Precision  = 0.6461 +/- 0.0295
+Recall     = 0.9100 +/- 0.0894
+F1         = 0.7531 +/- 0.0309
+Separation = 0.3657 +/- 0.0331
+
+Comparison:
+Handcrafted A-CFG F1 = 0.5310
+Pooled-MLP F1        = 0.7531 +/- 0.0309
+GCN F1               = 0.7759 +/- 0.0045
+
+Interpretation:
+The learned pooled MLP substantially improves over the handcrafted
+cosine baseline. The GCN provides an additional improvement, especially
+in positive/negative similarity separation, suggesting value from
+graph-aware message passing on the current controlled Clone evaluation.
+
+Freeze rule:
+Do not modify or tune this baseline using Phase-2 results.
+Any subsequent architecture or training change must be treated as a
+new model version and evaluated under a new independent protocol.

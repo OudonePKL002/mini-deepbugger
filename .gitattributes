@@ -1,0 +1,15 @@
+# Keep repository text files consistent across platforms.
+*.py text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.c text eol=lf
+
+# Generated binary and office artifacts must not be line-ending normalized.
+*.png binary
+*.pdf binary
+*.docx binary
+*.zip binary

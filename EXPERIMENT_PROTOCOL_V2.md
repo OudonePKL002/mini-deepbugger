@@ -15,8 +15,8 @@
 - **Frozen Baseline Anchor:** Commit `04baeddf8116e632be6c8aeaa183872c9a8b8a6f` (Tag: `next-baseline-freeze`)  
 - **Protocol Git Branch:** `exp/asiaccs-v2`  
 - **Frozen Decisions (Approved by Supervisor 2026-10-08):**  
-  - **Decision 1 (Eligible Function Non-Triviality Rule):** Evaluated strictly once on the canonical reference build (`/usr/bin/clang`, `-O0`, boundary-preserving `__attribute__((noinline))`, ARM64). Rule: $|V| \ge 1$, instruction count $\ge 3$ excluding prologue/epilogue, and cyclomatic complexity $\ge 1$. Canonical ground-truth denominator $M = |\mathcal{F}_{\text{canonical}}(Q)|$ is permanently frozen across all subsequent builds and variants.  
-  - **Decision 7 (Canonical Program Allocation):** Total ~21 canonical programs partitioned as 7 `train` / 7 `dev` / 7 `sealed_test` (yielding $C(7,2) = 21$ canonical unrelated pairs per partition).  
+  - **Decision 1 (Eligible Function Non-Triviality Rule):** Evaluated strictly once on the canonical reference build (`/usr/bin/clang`, `-O0`, boundary-preserving `__attribute__((noinline))`, ARM64). Rule: $|V| \ge 1$ and instruction count $\ge 3$ excluding prologue/epilogue (cyclomatic complexity is a derived diagnostic metadata field only, not an eligibility gate). Canonical ground-truth denominator $M = |\mathcal{F}_{\text{canonical}}(Q)|$ is permanently frozen across all subsequent builds and variants.  
+  - **Decision 7 (Canonical Program Allocation):** Total ~21 canonical programs partitioned as 7 `train` / 7 `dev` / 7 `sealed_test` (yielding $C(7,2) = 21$ canonical unrelated pairs per partition). Dataset V2 `train` is used strictly for uniqueness/reference corpus statistics ($\text{freq}_{\text{ref}}$) and never retrains the baseline `GraphEncoder` (which is reconstructed solely on Phase-1 data).  
   - **Decision 8 (Partial-Reuse Target Construction Procedure):** Deterministic SHA-256 PRNG selection ($\text{SHA256}(\text{canonical\_id} \parallel \text{nominal\_reuse\_level} \parallel \text{base\_dataset\_seed})$); transitive dependency closure within $Q$ accounted in $k$; intra-split donor pairing (donor $D$ strictly from same partition); directional ground truth $R^*(Q, T) = k / M$; realized reuse ratio recorded in manifests; frozen base dataset seed: `base_dataset_seed = 20261008`.  
 - **Open Decisions (Gated for Development-Set Selection):**  
   - **Decision 2:** Complexity weighting formulation $C(f)$  
@@ -27,6 +27,11 @@
   - **Decision 9:** Method-specific program-level decision threshold policy ($\theta_{\text{B1}}, \theta_{\text{B2}}, \theta_{\text{B3}}, \alpha_{\text{bg}}$)  
 - **Frozen Base Dataset Seed:** `base_dataset_seed = 20261008`  
 - **Pre-Freeze Dataset Assurance:** *No Dataset V2 artifact existed before this protocol freeze.*  
+
+### Freeze Erratum 1 — 2026-10-08
+
+- **Dataset V2 Train/Reference Scope:** Dataset V2 train/reference programs do **not** retrain or reconstruct the baseline `GraphEncoder`. The baseline `GraphEncoder` is reconstructed **ONLY** using the frozen Phase-1 training procedure and Phase-1 training data defined by the verified clean baseline. Dataset V2 train/reference programs **MUST NOT** replace Phase-1 baseline training data. Dataset V2 train/reference is used strictly for uniqueness/reference corpus statistics, train-only frequency estimation ($\text{freq}_{\text{ref}}(f)$), and approved Dataset V2 development/reference operations. Retraining the baseline `GraphEncoder` on Dataset V2 is **NOT** authorized by this protocol.  
+- **Decision 1 Non-Triviality Exactness:** Decision 1 wording was aligned exactly with the approved Option 2 non-triviality rule: $|V| \ge 1$ and instruction count $\ge 3$ excluding function prologue/epilogue. Cyclomatic complexity is tracked as a derived diagnostic metadata field, and is **NOT** an independent eligibility gate.  
 
 ---
 
@@ -365,8 +370,8 @@ Trivial stub functions (e.g., single-instruction return functions or pass-throug
 >   - Architecture: ARM64  
 >   - Boundary Condition: Boundary-preserving (`__attribute__((noinline))`)  
 > - **Approved Non-Triviality Rule (Option 2):** A candidate function is admitted to $\mathcal{F}_{\text{canonical}}(Q)$ if and only if in the canonical reference build:  
->   $$|V| \ge 1 \quad \text{and} \quad N_{\text{inst}} \ge 3 \text{ (excluding prologue/epilogue)} \quad \text{and} \quad \text{Cyclomatic Complexity } \ge 1$$  
->   This excludes empty dummy stubs (`ret` only) while preserving compact algorithmic kernels.  
+>   $$|V| \ge 1 \quad \text{and} \quad N_{\text{inst}} \ge 3 \text{ (excluding prologue/epilogue)}$$  
+>   This excludes empty dummy stubs (`ret` only) while preserving compact algorithmic kernels. (Cyclomatic complexity is tracked as a derived diagnostic metadata field in manifests, but is NOT an independent eligibility gate).  
 > - **Denominator Immutability:** Ground-truth denominator $M = |\mathcal{F}_{\text{canonical}}(Q)|$ is permanently frozen for program $Q$ across all subsequent compiler toolchains, optimization levels (-O3), source transformations, and inlining stress conditions.
 
 ---
@@ -377,7 +382,7 @@ To eliminate any potential for data snooping or distribution leakage, Dataset V2
 
 ```
 data/v2/
-├── train/          (Training canonical programs & variants)
+├── train/          (Reference / train canonical programs & variants for corpus statistics)
 ├── dev/            (Development & hyperparameter calibration programs)
 ├── sealed_test/    (Sealed independent test partition — 100% inaccessible during dev)
 ├── manifests/      (Immutable CSV manifests recording splits, families, and labels)
@@ -400,7 +405,7 @@ data/v2/
 > **Supervisory Decision on Dataset V2 Split Allocation (`[DECISION 7]`):**  
 > - **Status:** FROZEN and APPROVED by human supervisor on 2026-10-08 prior to Dataset V2 generation.  
 > - **Approved Canonical Allocation:** Total ~21 canonical, self-contained C programs partitioned as:  
->   - **7 Canonical Programs $\rightarrow$ `train` (Reference Corpus):** Used to reconstruct baseline GraphEncoder instances and compute corpus-wide frequency statistics $\text{freq}_{\text{ref}}(f)$ for uniqueness weighting.  
+>   - **7 Canonical Programs $\rightarrow$ `train` (Reference Corpus):** Used strictly for uniqueness/reference corpus statistics, train-only frequency estimation ($\text{freq}_{\text{ref}}(f)$), and approved Dataset V2 development/reference operations. Dataset V2 train/reference programs **MUST NOT** replace Phase-1 baseline training data. The baseline GraphEncoder is reconstructed **ONLY** using the frozen Phase-1 training procedure and Phase-1 training data defined by the verified clean baseline; retraining the baseline GraphEncoder on Dataset V2 is **NOT** authorized by this protocol.  
 >   - **7 Canonical Programs $\rightarrow$ `dev` (Validation & Calibration):** Yields $C(7,2) = 21$ canonical unrelated pairs to fit the empirical background null distribution $\mathcal{D}_{\text{bg}}$, tune function-level threshold $\tau_{\text{function}}$, and calibrate method-specific decision thresholds.  
 >   - **7 Canonical Programs $\rightarrow$ `sealed_test` (Independent Test Partition):** Yields 21 canonical unrelated pairs, providing approximately 4.76% ($1/21$) raw false-positive resolution at canonical pair level. Strictly isolated and sealed until all models and thresholds are frozen.  
 > - **Statistical Grounding:** Low-FPR claims are grounded in canonical pair diversity ($C(7,2) = 21$ independent pairs per partition) rather than inflated variant counts.  
@@ -788,13 +793,13 @@ The status of the 9 key methodological decisions following the 2026-10-08 Human 
 
 | Decision ID | Section | Topic | Governance Status | Frozen Resolution / Gated Selection Criteria |
 | :--- | :--- | :--- | :--- | :--- |
-| `[DECISION 1]` | 8.2 | **Eligible Function Size Threshold** | `[FROZEN — APPROVED BY SUPERVISOR 2026-10-08]` | **Option 2 Approved:** Evaluated strictly once on canonical reference build (`/usr/bin/clang`, `-O0`, boundary-preserving `__attribute__((noinline))`, ARM64). Rule: $|V| \ge 1$, $N_{\text{inst}} \ge 3$ (excluding prologue/epilogue), and cyclomatic complexity $\ge 1$. Ground-truth denominator $M = |\mathcal{F}_{\text{canonical}}(Q)|$ permanently frozen. |
+| `[DECISION 1]` | 8.2 | **Eligible Function Size Threshold** | `[FROZEN — APPROVED BY SUPERVISOR 2026-10-08]` | **Option 2 Approved:** Evaluated strictly once on canonical reference build (`/usr/bin/clang`, `-O0`, boundary-preserving `__attribute__((noinline))`, ARM64). Rule: $|V| \ge 1$ and $N_{\text{inst}} \ge 3$ (excluding prologue/epilogue); cyclomatic complexity is a derived diagnostic field only (not an eligibility gate). Ground-truth denominator $M = |\mathcal{F}_{\text{canonical}}(Q)|$ permanently frozen. |
 | `[DECISION 2]` | 14.2 | **Complexity Weighting $C(f)$** | `[OPEN — GATED FOR DEV SELECTION]` | Candidate formulations (Option A: $\log_2(1+N_{\text{inst}})$; Option B: $\sqrt{|V| \cdot M}$; Option C: $\ln(1+|V|)$). Gated for selection on `dev` partition. |
 | `[DECISION 3]` | 15.2 | **Uniqueness Threshold $\tau_{\text{unique}}$** | `[OPEN — GATED FOR DEV SELECTION]` | Clustering threshold $\tau_{\text{unique}} \in \{0.75, 0.80, 0.85\}$ computed strictly on `train`/reference corpus. Gated for selection on `dev` partition. |
 | `[DECISION 4]` | 16.2 | **Background Calibration Method** | `[OPEN — GATED FOR DEV SELECTION]` | Calibration model (Option 1: Empirical tail probability $E_{\text{cal}} = 1 - p_{\text{bg}}$; Option 2: Gaussian z-score; Option 3: Platt scaling). Gated for selection on `dev` partition. |
 | `[DECISION 5]` | 17 | **Classification Policy** | `[OPEN — GATED FOR DEV SELECTION]` | Operational boundary (Policy A: 0% vs 25–100% primary; Policy B: 0% vs 50–100% secondary). Gated for confirmation on `dev` partition. |
 | `[DECISION 6]` | 11.3 | **Function Match Threshold $\tau_{\text{function}}$** | `[OPEN — GATED FOR DEV SELECTION]` | Grid search $\tau_{\text{function}} \in [0.50, 0.85]$ in steps of 0.05 on `train`/`dev` pairs. Gated for freezing on `dev` prior to sealed test. |
-| `[DECISION 7]` | 9.2 | **Dataset Allocation** | `[FROZEN — APPROVED BY SUPERVISOR 2026-10-08]` | **Approved Canonical Allocation:** Total ~21 canonical programs partitioned as **7 `train` / 7 `dev` / 7 `sealed_test`** ($C(7,2) = 21$ canonical unrelated pairs per partition, yielding ~4.76% raw false-positive resolution). |
+| `[DECISION 7]` | 9.2 | **Dataset Allocation** | `[FROZEN — APPROVED BY SUPERVISOR 2026-10-08]` | **Approved Canonical Allocation:** Total ~21 canonical programs partitioned as **7 `train` / 7 `dev` / 7 `sealed_test`** ($C(7,2) = 21$ canonical unrelated pairs per partition, yielding ~4.76% raw false-positive resolution). Dataset V2 `train` is used strictly for uniqueness corpus statistics ($\text{freq}_{\text{ref}}$) and never retrains the baseline `GraphEncoder` (which is reconstructed solely on Phase-1 data). |
 | `[DECISION 8]` | 7.1 | **Partial-Reuse Construction Procedure** | `[FROZEN — APPROVED BY SUPERVISOR 2026-10-08]` | **Approved Construction Procedure:** Deterministic SHA-256 PRNG selection ($\text{SHA256}(\text{canonical\_id} \parallel \text{nominal\_reuse\_level} \parallel \text{base\_dataset\_seed})$); transitive dependency closure within $Q$; intra-split donor pairing; directional ground truth $R^*(Q, T) = k / M$; frozen `base_dataset_seed = 20261008`. |
 | `[DECISION 9]` | 13 | **Method-Specific Program Thresholds ($\theta_{\text{B1}}, \theta_{\text{B2}}, \theta_{\text{B3}}, \alpha_{\text{bg}}$)** | `[OPEN — GATED FOR DEV SELECTION]` | Selection policy for method-specific decision thresholds on `dev` (e.g., Option B: uniform low-FPR operating point). Gated for freezing on `dev` prior to sealed test, with threshold-independent PR-AUC reporting. |
 

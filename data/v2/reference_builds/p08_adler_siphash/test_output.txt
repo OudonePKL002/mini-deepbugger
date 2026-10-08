@@ -1,0 +1,1 @@
+PASS: p08_adler_siphash unit tests passed.

@@ -1,0 +1,1 @@
+PASS: p14_bitmap_index unit tests passed.

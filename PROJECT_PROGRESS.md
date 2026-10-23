@@ -207,8 +207,95 @@
   - Recorded SHA-256 fingerprints of the 4 gitignored historical binaries (`hello_O0`..`hello_O3`) without rebuilding them.
   - Recorded the 2 documentation-only checksum mismatches (`README.md`, `docs/DEEPWEAK_V1_PROTOCOL.md`) as historical documentation drift without regenerating checksum files.
 - Open questions: None
-- Git commit:
-- Next proposed micro-project: STEP-003 — Execute controlled Mini-DeepClone PoC v1 baseline reproduction (`experiments/run_final_experiment.py` and `experiments/evaluate_clone_pooled_mlp_baseline.py` using `.venv/bin/python`) and verify exact metric/hash agreement against historical `results/final/*.csv`.
+- Git commit: 2c5cf04
+- Next proposed micro-project: STEP-003 — Reproduce the historical Mini-DeepBugger DeepClone GraphEncoder baseline only.
+
+---
+
+### STEP-003 — Reproduce DeepClone GraphEncoder baseline
+
+- Date: 2026-10-23
+- Status: DONE
+- Goal: Reproduce historical Mini-DeepBugger DeepClone GraphEncoder baseline using the frozen repository state, existing historical binaries, and exact project virtual environment.
+- Master Plan section: Section 37 (Phase 0 — Baseline Reproduction and Freeze)
+- Branch: deepbugger-extension
+- Reproduction workspace: Isolated temporary workspace (`/tmp/step003_repro`)
+- Python environment: Python 3.12.12 (`.venv/bin/python`), torch 2.13.0, torch-geometric 2.8.0.post1, numpy 2.5.2, pandas 3.0.5, scikit-learn 1.9.0, networkx 3.6.1, matplotlib 3.11.1
+- Historical binary hashes verified:
+  - `sandbox/variants/hello_O0`: `b03e786e94664b48af30e951ffee1c74dc7b8632a40d3e9ac6f12f3edf99784c` (EXACT MATCH)
+  - `sandbox/variants/hello_O1`: `42f4f57aa035e0d8ab3d4f9205c450272a7b49e0c30f549917c977192ac2ba57` (EXACT MATCH)
+  - `sandbox/variants/hello_O2`: `b563d76883a532b15a4ee7ea142b66cf70a1ce8b823d2f758f6b4f36901925c0` (EXACT MATCH)
+  - `sandbox/variants/hello_O3`: `eea484872eb13a00aaae13a0d3ebcc4b4f3dadf5ce40ac82bcd46b366df0c18d` (EXACT MATCH)
+- Historical result hashes before run:
+  - `results/final/final_experiment_summary.csv`: `58b3b18e5157a28024d4f4cceaf2c327fba71b33c6c2fe21b50c0e915baa53af`
+  - `results/final/phase2_graph_per_seed.csv`: `b640849d4a887f9e1de10a3ec72ddda96a21cbb653311483836ef846ece984d6`
+- Experiment command: `cd /tmp/step003_repro && /Users/admin/Desktop/Mini-DeepBugger/.venv/bin/python experiments/run_final_experiment.py`
+- Seeds: `[42, 123, 2026, 7, 99]`
+- Execution note:
+  The first STEP-003 attempt was interrupted by Antigravity quota exhaustion.
+  The task was resumed only after inspecting repository and temporary-workspace state.
+- Reproduced GraphEncoder metrics:
+  - F1: `0.775883293606493 ± 0.004545179401549354` (`0.7759 ± 0.0045`)
+  - Accuracy: `0.7516666666666667 ± 0.0037267799624996364` (`0.7517 ± 0.0037`)
+  - Precision: `0.7071235102925244 ± 0.009341224207796935` (`0.7071 ± 0.0093`)
+  - Recall: `0.86 ± 0.022360679774997918` (`0.8600 ± 0.0224`)
+  - Positive Mean: `0.8542568600177765 ± 0.02591326212407821` (`0.8543 ± 0.0259`)
+  - Negative Mean: `0.3787666478927713 ± 0.023401277394816317` (`0.3788 ± 0.0234`)
+  - Separation: `0.4754902121250052 ± 0.03182988040264492` (`0.4755 ± 0.0318`)
+- Per-seed GraphEncoder metrics:
+  - Seed 42: acc=`0.7500`, prec=`0.7083`, rec=`0.8500`, f1=`0.7727`, pos_mean=`0.862666`, neg_mean=`0.409312`, sep=`0.453354`, tp=51, fp=21, fn=9, tn=39
+  - Seed 123: acc=`0.7500`, prec=`0.7083`, rec=`0.8500`, f1=`0.7727`, pos_mean=`0.832329`, neg_mean=`0.351242`, sep=`0.481087`, tp=51, fp=21, fn=9, tn=39
+  - Seed 2026: acc=`0.7500`, prec=`0.7083`, rec=`0.8500`, f1=`0.7727`, pos_mean=`0.826242`, neg_mean=`0.392550`, sep=`0.433692`, tp=51, fp=21, fn=9, tn=39
+  - Seed 7: acc=`0.7500`, prec=`0.6923`, rec=`0.9000`, f1=`0.7826`, pos_mean=`0.890629`, neg_mean=`0.379549`, sep=`0.511080`, tp=54, fp=24, fn=6, tn=36
+  - Seed 99: acc=`0.7583`, prec=`0.7183`, rec=`0.8500`, f1=`0.7786`, pos_mean=`0.859419`, neg_mean=`0.361180`, sep=`0.498238`, tp=51, fp=20, fn=9, tn=40
+- Reproduced Handcrafted metrics:
+  - F1: `0.5309734513274337` (`0.5310`)
+  - Accuracy: `0.5583333333333333` (`0.5583`)
+  - Precision: `0.5660377358490566` (`0.5660`)
+  - Recall: `0.5` (`0.5000`)
+  - Positive Mean: `0.6462890081107616` (`0.6463`)
+  - Negative Mean: `0.45258812978863716` (`0.4526`)
+  - Separation: `0.19370087832212446` (`0.1937`)
+- Historical comparison:
+  - GraphEncoder F1: historical `0.775883293606493`, reproduced `0.775883293606493`, diff = `0.0` (EXACT)
+  - GraphEncoder Accuracy: historical `0.7516666666666667`, reproduced `0.7516666666666667`, diff = `0.0` (EXACT)
+  - GraphEncoder Precision: historical `0.7071235102925244`, reproduced `0.7071235102925244`, diff = `0.0` (EXACT)
+  - GraphEncoder Recall: historical `0.86`, reproduced `0.86`, diff = `0.0` (EXACT)
+  - GraphEncoder Positive Mean: historical `0.8542568600177765`, reproduced `0.8542568600177765`, diff = `0.0` (EXACT)
+  - GraphEncoder Negative Mean: historical `0.3787666478927713`, reproduced `0.3787666478927713`, diff = `0.0` (EXACT)
+  - GraphEncoder Separation: historical `0.4754902121250052`, reproduced `0.4754902121250052`, diff = `0.0` (EXACT)
+  - Handcrafted F1: historical `0.5309734513274337`, reproduced `0.5309734513274337`, diff = `0.0` (EXACT)
+  - Handcrafted Accuracy: historical `0.5583333333333333`, reproduced `0.5583333333333333`, diff = `0.0` (EXACT)
+  - Handcrafted Precision: historical `0.5660377358490566`, reproduced `0.5660377358490566`, diff = `0.0` (EXACT)
+  - Handcrafted Recall: historical `0.5`, reproduced `0.5`, diff = `0.0` (EXACT)
+  - Handcrafted Positive Mean: historical `0.6462890081107616`, reproduced `0.6462890081107616`, diff = `0.0` (EXACT)
+  - Handcrafted Negative Mean: historical `0.45258812978863716`, reproduced `0.45258812978863716`, diff = `0.0` (EXACT)
+  - Handcrafted Separation: historical `0.19370087832212446`, reproduced `0.19370087832212446`, diff = `0.0` (EXACT)
+- Reproduced result hashes:
+  - `results/final/final_experiment_summary.csv`: `58b3b18e5157a28024d4f4cceaf2c327fba71b33c6c2fe21b50c0e915baa53af` (BYTE-IDENTICAL)
+  - `results/final/phase2_graph_per_seed.csv`: `b640849d4a887f9e1de10a3ec72ddda96a21cbb653311483836ef846ece984d6` (BYTE-IDENTICAL)
+- Reproduction classification: EXACT REPRODUCTION
+- Primary baseline files unchanged: YES. SHA-256 verified byte-for-byte identical; working tree clean.
+- Risks/ambiguities: None. Baseline DeepClone GraphEncoder reproduction is 100% deterministic and byte-identical across all seeds and summary metrics.
+- Commands executed:
+  - `git branch --show-current`, `git status`, `git log --oneline --decorate -5`
+  - `shasum -a 256 results/final/final_experiment_summary.csv results/final/phase2_graph_per_seed.csv`
+  - Preparation and verification of `/tmp/step003_repro`
+  - `cd /tmp/step003_repro && /Users/admin/Desktop/Mini-DeepBugger/.venv/bin/python experiments/run_final_experiment.py`
+  - `shasum -a 256 /tmp/step003_repro/results/final/final_experiment_summary.csv /tmp/step003_repro/results/final/phase2_graph_per_seed.csv`
+  - `rm -rf /tmp/step003_repro`
+- Verification performed:
+  - Verified 100% metric match with 0.0 numerical difference across all summary metrics, distributions, and per-seed rows.
+  - Verified reproduced CSV hashes match historical tracked CSV hashes byte-for-byte (`BYTE-IDENTICAL`).
+  - Verified primary working tree and tracked baseline results remained completely unchanged.
+- Result: EXACT REPRODUCTION achieved.
+- Decisions made:
+  - Executed reproduction strictly in an isolated reproduction workspace (`/tmp/step003_repro`) to protect primary repository baseline files from accidental overwrite.
+  - Cleaned up temporary workspace after confirming byte-identical output.
+- Open questions: None.
+- Git commit: (pending local commit)
+- Next proposed micro-project: STEP-004 — Reproduce and verify the Pooled-Node MLP ablation baseline (`experiments/evaluate_clone_pooled_mlp_baseline.py`).
+
 
 
 

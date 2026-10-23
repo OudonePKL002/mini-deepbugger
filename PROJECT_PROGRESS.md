@@ -378,8 +378,40 @@
   - Executed reproduction strictly in an isolated reproduction workspace (`/tmp/step004_repro`) to protect primary repository baseline files from accidental overwrite.
   - Cleaned up temporary workspace after confirming byte-identical output.
 - Open questions: None.
+- Git commit: c9e5ed9
+- Next proposed micro-project: STEP-005 — Freeze the verified Mini-DeepBugger baseline.
+
+---
+
+### STEP-005 — Freeze Mini-DeepBugger baseline
+
+- Date: 2026-10-23
+- Status: DONE
+- Goal: Create an immutable, auditable baseline-freeze record for the historical Mini-DeepBugger/APSEC baseline that has now been successfully reproduced.
+- Master Plan section: Section 37 (Phase 0 — Baseline Reproduction and Freeze)
+- Branch: deepbugger-extension
+- Baseline branch: main
+- Baseline commit: 194999ea1b692b771702484b3fd471386a75c81b
+- Freeze documentation: `frozen_baseline/BASELINE_FREEZE.md`
+- Freeze checksum manifest: `frozen_baseline/BASELINE_SHA256SUMS.txt`
+- Frozen 29-D schema: `src/acfg_builder.py` (`compute_node_features`: 10 instruction categories, 5 register counts, 2 operand/immediate, 12 CFG/centrality topological features)
+- Frozen manifests: `data/variant_pair_manifest.csv` (156 pairs, 120 train), `data/phase2_independent_manifest.csv` (120 pairs: 60 pos, 60 neg, 0 family overlap with training)
+- Frozen configuration: `config/experiment.json` (input=29, hidden=32, emb=16, margin=0.5, lr=0.01, epochs=100, threshold=0.5, seeds=[42, 123, 2026, 7, 99])
+- Frozen historical binaries: `sandbox/variants/hello_O0`..`hello_O3` (Mach-O ARM64, verified SHA-256 fingerprints)
+- Frozen environment: macOS 26.6.2, Apple Clang 21.0.0, llvm-otool 21.0.0, Python 3.12.12 (.venv), pinned packages (`torch 2.13.0`, `torch-geometric 2.8.0.post1`, `numpy 2.5.2`, `pandas 3.0.5`, `scikit-learn 1.9.0`, `networkx 3.6.1`, `matplotlib 3.11.1`)
+- Historical GraphEncoder reproduction: `EXACT REPRODUCTION` (STEP-003, commit `20d983e`, byte-identical CSV hashes)
+- Historical Pooled-MLP reproduction: `EXACT REPRODUCTION` (STEP-004, commit `c9e5ed9`, byte-identical CSV hashes)
+- Historical Handcrafted verification: F1=`0.5310`, Accuracy=`0.5583`, Precision=`0.5660`, Recall=`0.5000`, Positive Mean=`0.6463`, Negative Mean=`0.4526`, Separation=`0.1937` (verified exact match across both runs)
+- DeepWeak status: Historical auxiliary Mini-DeepBugger component — preserved and unmodified; not reproduced during provenance baseline freeze
+- Known documentation drift: `README.md` and `docs/DEEPWEAK_V1_PROTOCOL.md` modified after historical POC_V1/DEEPWEAK_V1 checksum generation; preserved as historical documentation drift without altering documents
+- Verification performed: Verified SHA-256 integrity of all 17 baseline-critical files (13 tracked + 4 gitignored binaries) against `frozen_baseline/BASELINE_SHA256SUMS.txt`; verified zero modifications to research code, manifests, configs, results, or main branch
+- Result: GATE A — BASELINE FREEZE: PASSED
+- Decisions made: Created isolated `frozen_baseline/` directory with `BASELINE_FREEZE.md` and `BASELINE_SHA256SUMS.txt` rather than duplicating the source tree; established immutable baseline reference point for DeepBugger Extension
+- Open questions: None
 - Git commit: (pending local commit)
-- Next proposed micro-project: STEP-005 — Reproduce and verify the Mini-DeepBugger DeepWeak vulnerability evaluation baseline (`experiments/evaluate_deepweak_w2_frozen.py`).
+- Git tag: (pending tag creation)
+- Next proposed micro-project: STEP-006 — Phase 1: Establish the DeepBugger Provenance Schema & Protocol (`PROVBENCH_SCHEMA.md`).
+
 
 
 

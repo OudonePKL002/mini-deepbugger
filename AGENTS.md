@@ -245,3 +245,24 @@ Propose ONE small next task only.
 Then STOP.
 
 Do not execute the proposed next task until the user approves it.
+
+---
+
+## Baseline Branch Protection
+
+The `main` branch is the historical Mini-DeepBugger/APSEC baseline and reference branch.
+
+Do not implement DeepBugger Extension work directly on `main`.
+
+Before every DeepBugger Extension task, verify:
+
+`git branch --show-current`
+
+Expected development branch:
+
+`deepbugger-extension`
+
+If an Extension task is started while the current branch is `main`, STOP and ask the user before making any changes.
+
+Do not merge, rebase, reset, or rewrite `main` without explicit user approval.
+

@@ -50,3 +50,31 @@
 - Git commit:
 - Next proposed micro-project: STEP-001 — Audit Mini-DeepBugger repository
 
+---
+
+### STEP-000B — Create DeepBugger Extension branch
+
+- Date: 2026-10-23
+- Status: DONE
+- Goal: Separate DeepBugger Extension development from the historical Mini-DeepBugger/APSEC baseline branch.
+- Starting branch: main
+- Extension branch: deepbugger-extension
+- Files inspected:
+  - AGENTS.md
+  - PROJECT_PROGRESS.md
+  - DeepBugger_Extension_Final_Master_Plan_v4.md
+- Files changed:
+  - PROJECT_PROGRESS.md
+- Verification performed:
+  - Confirmed main was clean before branching.
+  - Confirmed no research code or dataset changes were introduced.
+  - Confirmed current branch is deepbugger-extension.
+  - Confirmed working tree was clean before progress-log update.
+- Decision:
+  - main is baseline/reference only.
+  - all future DeepBugger Extension work must occur on deepbugger-extension.
+- Open questions: None
+- Git commit:
+- Next proposed micro-project: STEP-001 — Audit Mini-DeepBugger repository
+
+

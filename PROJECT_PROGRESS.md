@@ -23,3 +23,30 @@
 - Open questions: None
 - Git commit: Created in `step-000: establish DeepBugger agent workflow` (see git log / completion report for exact hash)
 - Next proposed micro-project: `STEP-001 — audit Mini-DeepBugger repository` (read-only audit of existing repository structure, baseline code, datasets, manifests, configs, and historical results to prepare for Phase 0 baseline freeze).
+
+---
+
+### STEP-000A — Track DeepBugger Master Plan
+
+- Date: 2026-10-23
+- Status: DONE
+- Goal: Add the approved DeepBugger Extension Final Master Plan v4 to version control as the project research source of truth.
+- Files inspected:
+  - DeepBugger_Extension_Final_Master_Plan_v4.md
+- Files changed:
+  - PROJECT_PROGRESS.md
+- Files added:
+  - DeepBugger_Extension_Final_Master_Plan_v4.md
+- Verification performed:
+  - Confirmed AGENTS.md was restored to committed state.
+  - Confirmed PROJECT_PROGRESS.md accidental whitespace diff was removed before this entry.
+  - Confirmed the Master Plan file was not modified.
+  - Confirmed no research code or dataset files changed.
+- Result: Master Plan added to repository tracking.
+- Decisions made:
+  - Keep the Master Plan at its current repository path for now.
+  - Do not move or rename it during housekeeping.
+- Open questions: None
+- Git commit:
+- Next proposed micro-project: STEP-001 — Audit Mini-DeepBugger repository
+

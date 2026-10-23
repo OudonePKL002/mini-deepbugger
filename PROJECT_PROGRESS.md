@@ -293,8 +293,94 @@
   - Executed reproduction strictly in an isolated reproduction workspace (`/tmp/step003_repro`) to protect primary repository baseline files from accidental overwrite.
   - Cleaned up temporary workspace after confirming byte-identical output.
 - Open questions: None.
+- Git commit: 20d983e
+- Next proposed micro-project: STEP-004 — Reproduce and verify the historical Mini-DeepBugger Pooled-Node MLP baseline only.
+
+---
+
+### STEP-004 — Reproduce Pooled-Node MLP baseline
+
+- Date: 2026-10-23
+- Status: DONE
+- Goal: Reproduce historical Pooled-Node MLP ablation baseline using the exact frozen Mini-DeepBugger inputs and project environment in an isolated workspace.
+- Master Plan section: Section 37 (Phase 0 — Baseline Reproduction and Freeze)
+- Branch: deepbugger-extension
+- Reproduction workspace: Isolated temporary workspace (`/tmp/step004_repro`)
+- Python environment: Python 3.12.12 (`.venv/bin/python`), torch 2.13.0, torch-geometric 2.8.0.post1, numpy 2.5.2, pandas 3.0.5, scikit-learn 1.9.0, networkx 3.6.1, matplotlib 3.11.1
+- Historical result hashes before run:
+  - `results/final/clone_pooled_mlp_summary.csv`: `ad9c89402a7ce7e33e52fec88470756319ec65f10322a3b383d1c077fec29591`
+  - `results/final/clone_pooled_mlp_per_seed.csv`: `2492f5eef647d23e04dde0b020fe403fc700003782dd2b9add72045fbb7010ca`
+- Experiment script: `experiments/evaluate_clone_pooled_mlp_baseline.py`
+- Experiment configuration:
+  - Architecture: `PooledMLPEncoder` (29-D node mean-pooling $\to$ Linear(29, 32) $\to$ ReLU $\to$ Linear(32, 16) $\to$ ReLU)
+  - Loss: `CosineEmbeddingLoss(margin=0.5)`
+  - Optimizer: `Adam(lr=0.01)`
+  - Epochs: 100
+  - Threshold: 0.5
+  - Graph samples: 80 cached Phase-1/Phase-2 A-CFGs
+  - Evaluation pairs: 120 balanced Phase-2 pairs (60 positive / 60 negative, 0 family overlap with training)
+- Seeds: `[42, 123, 2026, 7, 99]`
+- Reproduced metrics:
+  - Pooled-MLP Accuracy: `0.7033333333333334 ± 0.030390970881350794` (`0.7033 ± 0.0304`)
+  - Pooled-MLP Precision: `0.6460757939750379 ± 0.029492084696913733` (`0.6461 ± 0.0295`)
+  - Pooled-MLP Recall: `0.9099999999999999 ± 0.08944271909999157` (`0.9100 ± 0.0894`)
+  - Pooled-MLP F1: `0.7531376990780363 ± 0.030897680657538562` (`0.7531 ± 0.0309`)
+  - Pooled-MLP Positive Mean: `0.8957507936656475 ± 0.06627019148397004` (`0.8958 ± 0.0663`)
+  - Pooled-MLP Negative Mean: `0.5300020549855738 ± 0.08843542158389567` (`0.5300 ± 0.0884`)
+  - Pooled-MLP Separation: `0.3657487386800736 ± 0.033130125271054696` (`0.3657 ± 0.0331`)
+  - Handcrafted Accuracy: `0.5583333333333333` (`0.5583`)
+  - Handcrafted Precision: `0.5660377358490566` (`0.5660`)
+  - Handcrafted Recall: `0.5` (`0.5000`)
+  - Handcrafted F1: `0.5309734513274337` (`0.5310`)
+  - Handcrafted Positive Mean: `0.6462890081107616` (`0.6463`)
+  - Handcrafted Negative Mean: `0.45258812978863716` (`0.4526`)
+  - Handcrafted Separation: `0.19370087832212446` (`0.1937`)
+- Per-seed results:
+  - Seed 42: acc=`0.6667`, prec=`0.6064`, rec=`0.9500`, f1=`0.7403`, pos_mean=`0.911466`, neg_mean=`0.560013`, sep=`0.351453`, tp=57, fp=37, fn=3, tn=23
+  - Seed 123: acc=`0.7000`, prec=`0.6333`, rec=`0.9500`, f1=`0.7600`, pos_mean=`0.923041`, neg_mean=`0.576318`, sep=`0.346724`, tp=57, fp=33, fn=3, tn=27
+  - Seed 2026: acc=`0.7500`, prec=`0.6786`, rec=`0.9500`, f1=`0.7917`, pos_mean=`0.942391`, neg_mean=`0.544390`, sep=`0.398001`, tp=57, fp=27, fn=3, tn=33
+  - Seed 7: acc=`0.7083`, prec=`0.6404`, rec=`0.9500`, f1=`0.7651`, pos_mean=`0.922975`, neg_mean=`0.593997`, sep=`0.328978`, tp=57, fp=32, fn=3, tn=28
+  - Seed 99: acc=`0.6917`, prec=`0.6716`, rec=`0.7500`, f1=`0.7087`, pos_mean=`0.778880`, neg_mean=`0.375292`, sep=`0.403588`, tp=45, fp=22, fn=15, tn=38
+- Historical comparison:
+  - Pooled-MLP F1: historical `0.7531376990780363`, reproduced `0.7531376990780363`, diff = `0.0` (EXACT)
+  - Pooled-MLP Accuracy: historical `0.7033333333333334`, reproduced `0.7033333333333334`, diff = `0.0` (EXACT)
+  - Pooled-MLP Precision: historical `0.6460757939750379`, reproduced `0.6460757939750379`, diff = `0.0` (EXACT)
+  - Pooled-MLP Recall: historical `0.9099999999999999`, reproduced `0.9099999999999999`, diff = `0.0` (EXACT)
+  - Pooled-MLP Positive Mean: historical `0.8957507936656475`, reproduced `0.8957507936656475`, diff = `0.0` (EXACT)
+  - Pooled-MLP Negative Mean: historical `0.5300020549855738`, reproduced `0.5300020549855738`, diff = `0.0` (EXACT)
+  - Pooled-MLP Separation: historical `0.3657487386800736`, reproduced `0.3657487386800736`, diff = `0.0` (EXACT)
+  - Handcrafted F1: historical `0.5309734513274337`, reproduced `0.5309734513274337`, diff = `0.0` (EXACT)
+  - Handcrafted Accuracy: historical `0.5583333333333333`, reproduced `0.5583333333333333`, diff = `0.0` (EXACT)
+  - Handcrafted Precision: historical `0.5660377358490566`, reproduced `0.5660377358490566`, diff = `0.0` (EXACT)
+  - Handcrafted Recall: historical `0.5`, reproduced `0.5`, diff = `0.0` (EXACT)
+  - Handcrafted Positive Mean: historical `0.6462890081107616`, reproduced `0.6462890081107616`, diff = `0.0` (EXACT)
+  - Handcrafted Negative Mean: historical `0.45258812978863716`, reproduced `0.45258812978863716`, diff = `0.0` (EXACT)
+  - Handcrafted Separation: historical `0.19370087832212446`, reproduced `0.19370087832212446`, diff = `0.0` (EXACT)
+- Reproduced result hashes:
+  - `results/final/clone_pooled_mlp_summary.csv`: `ad9c89402a7ce7e33e52fec88470756319ec65f10322a3b383d1c077fec29591` (BYTE-IDENTICAL)
+  - `results/final/clone_pooled_mlp_per_seed.csv`: `2492f5eef647d23e04dde0b020fe403fc700003782dd2b9add72045fbb7010ca` (BYTE-IDENTICAL)
+- Reproduction classification: EXACT REPRODUCTION
+- Primary baseline files unchanged: YES. All historical result files verified byte-for-byte identical; working tree clean.
+- Risks/ambiguities: None. Baseline Pooled-Node MLP reproduction is 100% deterministic and byte-identical across all seeds and summary metrics.
+- Commands executed:
+  - `git branch --show-current`, `git status`, `git log --oneline --decorate -6`, `git rev-parse main`
+  - `shasum -a 256 results/final/clone_pooled_mlp_summary.csv results/final/clone_pooled_mlp_per_seed.csv`
+  - Preparation and verification of `/tmp/step004_repro`
+  - `cd /tmp/step004_repro && /Users/admin/Desktop/Mini-DeepBugger/.venv/bin/python experiments/evaluate_clone_pooled_mlp_baseline.py`
+  - `shasum -a 256 /tmp/step004_repro/results/final/clone_pooled_mlp_summary.csv /tmp/step004_repro/results/final/clone_pooled_mlp_per_seed.csv`
+  - `rm -rf /tmp/step004_repro`
+- Verification performed:
+  - Verified 100% metric match with 0.0 numerical difference across all summary metrics, distributions, and per-seed rows.
+  - Verified reproduced CSV hashes match historical tracked CSV hashes byte-for-byte (`BYTE-IDENTICAL`).
+  - Verified primary working tree and tracked baseline results remained completely unchanged.
+- Result: EXACT REPRODUCTION achieved.
+- Decisions made:
+  - Executed reproduction strictly in an isolated reproduction workspace (`/tmp/step004_repro`) to protect primary repository baseline files from accidental overwrite.
+  - Cleaned up temporary workspace after confirming byte-identical output.
+- Open questions: None.
 - Git commit: (pending local commit)
-- Next proposed micro-project: STEP-004 — Reproduce and verify the Pooled-Node MLP ablation baseline (`experiments/evaluate_clone_pooled_mlp_baseline.py`).
+- Next proposed micro-project: STEP-005 — Reproduce and verify the Mini-DeepBugger DeepWeak vulnerability evaluation baseline (`experiments/evaluate_deepweak_w2_frozen.py`).
+
 
 
 

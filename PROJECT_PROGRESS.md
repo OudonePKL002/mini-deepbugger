@@ -135,8 +135,81 @@
 - Result: Full read-only repository audit completed and documented.
 - Decisions made: None (read-only audit; no implementation decisions made).
 - Open questions: None blocking STEP-001 completion.
-- Git commit:
+- Git commit: f732b4f
 - Next proposed micro-project: STEP-002 — Verify and document the exact 29-D semantic A-CFG feature schema and baseline SHA-256 integrity (Phase 0 preparation before baseline reproduction and freeze).
+
+---
+
+### STEP-002 — Baseline reproduction preflight
+
+- Date: 2026-10-23
+- Status: DONE
+- Goal: Perform a read-only / non-training preflight to record the exact local machine/toolchain environment, fingerprint the historical baseline binaries, verify tracked-file SHA-256 integrity, confirm DeepClone inputs and historical result references, and determine reproduction readiness.
+- Master Plan section: Section 37 (Phase 0 — Baseline Reproduction and Freeze), Section 41 (Rule 1 — Baseline Freeze), Section 43 (Immediate Next Actions 1–3)
+- Branch: deepbugger-extension
+- Platform:
+  - `uname -a`: `Darwin MacBook-Air.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:17:12 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8103 arm64`
+  - `sw_vers`: `macOS 26.6.2 (Build 25G83)`
+  - `git --version`: `git version 2.53.0`
+- Python:
+  - System default (`which python3`): `/opt/homebrew/bin/python3` (`Python 3.14.3`, `pip 26.0`, no project packages installed)
+  - Project virtual environment (`.venv`): Python `3.12.12` (`.venv/bin/python3 -> /Users/admin/.pyenv/versions/3.12.12/bin/python3`, recorded in `.venv/pyvenv.cfg`, matching `README.md` Section 4)
+- Compiler:
+  - `/usr/bin/clang`: `Apple clang version 21.0.0 (clang-2100.1.1.101)`, `Target: arm64-apple-darwin25.6.0` (matches `README.md` Section 4)
+- otool:
+  - `/usr/bin/otool`: `llvm-otool(1): Apple Inc. version cctools-1040`, `disassembler: LLVM version 21.0.0`
+- Required dependency versions:
+  - `requirements.txt` and `requirements-frozen.txt` (identical): `torch==2.13.0`, `torch-geometric==2.8.0.post1`, `numpy==2.5.2`, `pandas==3.0.5`, `scikit-learn==1.9.0`, `networkx==3.6.1`, `matplotlib==3.11.1`
+- Installed dependency versions:
+  - System `/opt/homebrew/bin/python3` (`3.14.3`): `NOT INSTALLED` for all 7 packages
+  - Project `.venv` (`3.12.12`, inspected via `.venv/lib/python3.12/site-packages/*.dist-info`): `torch 2.13.0` (`MATCH`), `torch-geometric 2.8.0.post1` (`MATCH`), `numpy 2.5.2` (`MATCH`), `pandas 3.0.5` (`MATCH`), `scikit-learn 1.9.0` (`MATCH`), `networkx 3.6.1` (`MATCH`), `matplotlib 3.11.1` (`MATCH`)
+- Historical binary inventory:
+  - `sandbox/variants/hello_O0`: exists (`YES`), `Mach-O 64-bit executable arm64`, `34,888` bytes, modified `Aug 31 15:49:16 2026`
+  - `sandbox/variants/hello_O1`: exists (`YES`), `Mach-O 64-bit executable arm64`, `34,888` bytes, modified `Aug 31 15:49:16 2026`
+  - `sandbox/variants/hello_O2`: exists (`YES`), `Mach-O 64-bit executable arm64`, `34,888` bytes, modified `Aug 31 15:49:16 2026`
+  - `sandbox/variants/hello_O3`: exists (`YES`), `Mach-O 64-bit executable arm64`, `34,888` bytes, modified `Aug 31 15:49:16 2026`
+  - Verified with `otool -tvV sandbox/variants/hello_O0` that all 31 expected function symbols (`_add:` through `_sum_three:`) plus `_main:` are present and readable by `extract_function`.
+- Historical binary SHA-256:
+  - `sandbox/variants/hello_O0`: `b03e786e94664b48af30e951ffee1c74dc7b8632a40d3e9ac6f12f3edf99784c`
+  - `sandbox/variants/hello_O1`: `42f4f57aa035e0d8ab3d4f9205c450272a7b49e0c30f549917c977192ac2ba57`
+  - `sandbox/variants/hello_O2`: `b563d76883a532b15a4ee7ea142b66cf70a1ce8b823d2f758f6b4f36901925c0`
+  - `sandbox/variants/hello_O3`: `eea484872eb13a00aaae13a0d3ebcc4b4f3dadf5ce40ac82bcd46b366df0c18d`
+- Checksum verification:
+  - `CODE`: 7/7 OK (`src/acfg_builder.py`, `src/graph_encoder.py`, `experiments/run_final_experiment.py`, `experiments/evaluate_clone_pooled_mlp_baseline.py`, `src/deepweak_features.py`, `src/deepweak_graph_builder.py`, `src/deepweak_classifier.py`, `experiments/evaluate_deepweak_w2_frozen.py` — 8/8 code files OK)
+  - `CONFIG`: 2/2 OK (`config/experiment.json`, `requirements.txt`)
+  - `MANIFEST`: 4/4 OK (`data/variant_pair_manifest.csv`, `data/phase2_independent_manifest.csv`, `data/deepweak_w1_split_v2.csv`, `data/deepweak_w2_manifest.csv`)
+  - `RESULT`: 3/3 OK (`results/final/clone_pooled_mlp_per_seed.csv`, `results/final/clone_pooled_mlp_summary.csv`, `results/deepweak_w2_frozen_results.csv`; also recorded current SHA-256 of `results/final/final_experiment_summary.csv` = `58b3b18e5157a28024d4f4cceaf2c327fba71b33c6c2fe21b50c0e915baa53af` and `results/final/phase2_graph_per_seed.csv` = `b640849d4a887f9e1de10a3ec72ddda96a21cbb653311483836ef846ece984d6`)
+  - `DOCUMENTATION`: 3/5 OK (`docs/EXPERIMENT_PROTOCOL.md`, `docs/REPRODUCIBILITY_CHECKLIST.md`, `docs/CLONE_POOLED_MLP_PROTOCOL.txt`), 2/5 MISMATCH (`README.md`, `docs/DEEPWEAK_V1_PROTOCOL.md`)
+- Documentation-only checksum drift:
+  - `README.md`: recorded `644111307911a4b4bf21db2ab29519a761db7682a2b2f8fb39a1783e8cdadbfb` in `docs/POC_V1_SHA256SUMS.txt` vs current `b825fbb474893f6afb8742c5f87754ea26c1517e7b679032930757da6bbd5797`
+  - `docs/DEEPWEAK_V1_PROTOCOL.md`: recorded `25498ef0196ecaf8eb29cf250ae4978c34bfd608fee179f656a04d61f2823082` in `docs/DEEPWEAK_V1_SHA256SUMS.txt` vs current `a185d563753d088c676f93ae24ac158866fac2d6920b35d9b107d9ed192f33af`
+- Critical input integrity:
+  - All 8 DeepClone critical files (`config/experiment.json`, `src/acfg_builder.py`, `src/graph_encoder.py`, `experiments/run_final_experiment.py`, `experiments/evaluate_clone_pooled_mlp_baseline.py`, `data/variant_pair_manifest.csv`, `data/phase2_independent_manifest.csv`, `sandbox/hello.c`) exist and are readable.
+  - `data/variant_pair_manifest.csv`: 156 data rows (120 `train` rows: 60 pos / 60 neg; 36 `test` rows: 18 pos / 18 neg).
+  - `data/phase2_independent_manifest.csv`: 120 data rows (60 positive, 60 negative).
+- Historical result references:
+  - DeepClone GraphEncoder (`results/final/final_experiment_summary.csv` & `phase2_graph_per_seed.csv`): F1 = `0.775883293606493 ± 0.004545179401549354` (`0.7759 ± 0.0045`), Accuracy = `0.7516666666666667 ± 0.0037267799624996364` (`0.7517 ± 0.0037`), Precision = `0.7071235102925244 ± 0.009341224207796935` (`0.7071 ± 0.0093`), Recall = `0.86 ± 0.022360679774997918` (`0.8600 ± 0.0224`), Positive mean = `0.8542568600177765 ± 0.02591326212407821` (`0.8543 ± 0.0259`), Negative mean = `0.3787666478927713 ± 0.023401277394816317` (`0.3788 ± 0.0234`), Separation = `0.4754902121250052 ± 0.03182988040264492` (`0.4755 ± 0.0318`).
+  - Handcrafted A-CFG Baseline (`results/final/final_experiment_summary.csv`): F1 = `0.5309734513274337` (`0.5310`), Accuracy = `0.5583333333333333` (`0.5583`), Precision = `0.5660377358490566` (`0.5660`), Recall = `0.5` (`0.5000`), Positive mean = `0.6462890081107616`, Negative mean = `0.45258812978863716`, Separation = `0.19370087832212446` (`0.1937`).
+  - Pooled-MLP Baseline (`results/final/clone_pooled_mlp_summary.csv` & `clone_pooled_mlp_per_seed.csv`): F1 = `0.7531376990780363 ± 0.030897680657538562` (`0.7531 ± 0.0309`), Accuracy = `0.7033333333333334 ± 0.030390970881350794` (`0.7033 ± 0.0304`), Precision = `0.6460757939750379 ± 0.029492084696913733` (`0.6461 ± 0.0295`), Recall = `0.9099999999999999 ± 0.08944271909999157` (`0.9100 ± 0.0894`), Positive mean = `0.8957507936656475 ± 0.06627019148397004`, Negative mean = `0.5300020549855738 ± 0.08843542158389567`, Separation = `0.3657487386800736 ± 0.033130125271054696` (`0.3657 ± 0.0331`).
+- Reproduction readiness:
+  - `READY` (using `.venv/bin/python` which has Python 3.12.12 and exact matching package versions, Apple Clang 21.0.0, `otool` LLVM 21.0.0, all 4 historical binaries intact, and 100% matching code/config/manifest/result SHA-256 checksums).
+- Risks:
+  - System default `python3` (`/opt/homebrew/bin/python3`, Python 3.14.3) does not have project dependencies installed; reproduction commands must explicitly invoke `.venv/bin/python` (which symlinks to `/Users/admin/.pyenv/versions/3.12.12/bin/python3`).
+  - `experiments/run_final_experiment.py` and `experiments/evaluate_clone_pooled_mlp_baseline.py` write directly to `results/final/*.csv`, so when reproduction is executed in the next step, `git diff` / `shasum -a 256` on `results/final/*.csv` will directly verify whether the reproduced outputs are byte-for-byte identical to the tracked historical results.
+- Unresolved items:
+  - None blocking controlled reproduction.
+- Commands executed:
+  - `git branch --show-current`, `git status`, `git log --oneline --decorate -5`, `uname -a`, `sw_vers`, `python3 --version`, `which python3`, `clang --version`, `which clang`, `otool --version`, `which otool`, `git --version`, `python3 -m pip --version`, `python3 -m pip show ...`, `ls -la .venv/lib/python*/site-packages/*.dist-info`, `ls -la .venv/bin/python*`, `ls -lhT sandbox/variants/hello_O[0-3]`, `file sandbox/variants/hello_O[0-3]`, `shasum -a 256 sandbox/variants/hello_O[0-3]`, `otool -tvV sandbox/variants/hello_O0`, `stat -f "%N %z %Sm" sandbox/variants/hello_O[0-3]`, `wc -l data/*.csv`, `shasum -a 256 README.md docs/DEEPWEAK_V1_PROTOCOL.md`, `shasum -a 256 results/final/*.csv`, plus read-only Python CSV row/label count verification.
+- Verification performed:
+  - Confirmed `deepbugger-extension` is current branch, `main` is untouched at `194999e`, no binaries/code/datasets/manifests/configs/results/checksums were modified, and only `PROJECT_PROGRESS.md` changed.
+- Result: Preflight complete; repository and `.venv` environment are `READY` for controlled baseline reproduction.
+- Decisions made:
+  - Recorded SHA-256 fingerprints of the 4 gitignored historical binaries (`hello_O0`..`hello_O3`) without rebuilding them.
+  - Recorded the 2 documentation-only checksum mismatches (`README.md`, `docs/DEEPWEAK_V1_PROTOCOL.md`) as historical documentation drift without regenerating checksum files.
+- Open questions: None
+- Git commit:
+- Next proposed micro-project: STEP-003 — Execute controlled Mini-DeepClone PoC v1 baseline reproduction (`experiments/run_final_experiment.py` and `experiments/evaluate_clone_pooled_mlp_baseline.py` using `.venv/bin/python`) and verify exact metric/hash agreement against historical `results/final/*.csv`.
+
 
 
 

@@ -408,9 +408,34 @@
 - Result: GATE A — BASELINE FREEZE: PASSED
 - Decisions made: Created isolated `frozen_baseline/` directory with `BASELINE_FREEZE.md` and `BASELINE_SHA256SUMS.txt` rather than duplicating the source tree; established immutable baseline reference point for DeepBugger Extension
 - Open questions: None
+- Git commit: 1510a10
+- Git tag: mini-deepbugger-apsec-baseline-v1
+- Next proposed micro-project: STEP-005A — Publish the completed Phase 0 baseline-freeze milestone to GitHub.
+
+---
+
+### STEP-005A — Publish Phase 0 baseline-freeze milestone
+
+- Date: 2026-10-23
+- Status: DONE
+- Goal: Publish the verified Phase 0 DeepBugger baseline-freeze milestone to GitHub.
+- Branch: deepbugger-extension
+- Remote: origin (https://github.com/OudonePKL002/mini-deepbugger.git)
+- Remote branch: deepbugger-extension
+- Published branch commit: 1510a102317748d3b7d2fc87101ed3709d6e3976
+- Published baseline tag: mini-deepbugger-apsec-baseline-v1
+- Baseline tag target: 194999ea1b692b771702484b3fd471386a75c81b
+- Main branch pushed: No
+- Force push used: No
+- Verification performed: Verified remote branch head and tag dereference via git ls-remote; confirmed deepbugger-extension points to 1510a10 and mini-deepbugger-apsec-baseline-v1 points to 194999e on GitHub
+- Result: Phase 0 baseline-freeze milestone successfully published
+- Decisions made:
+  - Phase 0 milestone published before beginning Phase 1.
+  - `main` remains protected and was not pushed/modified by this step.
+- Open questions: None
 - Git commit: (pending local commit)
-- Git tag: (pending tag creation)
-- Next proposed micro-project: STEP-006 — Phase 1: Establish the DeepBugger Provenance Schema & Protocol (`PROVBENCH_SCHEMA.md`).
+- Next proposed micro-project: STEP-006 — Establish ProvBench provenance schema and protocol
+
 
 
 
